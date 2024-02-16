@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "formatters": {
+    "default": {
+      "format": "%(asctime)s  | %(levelname)s | %(message)s",
+      "datefmt": "%Y-%m-%dT%H:%M:%S%z:"
+    },
+    "json": {
+      "()": "logger.JSONLoggerFormatter",
+      "fmt_keys": {
+        "timestamp": "created",
+        "level": "levelname",
+        "message": "message",
+        "logger": "name",
+        "module": "module",
+        "function": "funcName",
+        "line": "lineno",
+        "thread_name": "threadName"
+      }
+    }
+  },
+  "handlers": {
+    "stdout": {
+      "class": "logging.StreamHandler",
+      "formatter": "default",
+      "stream": "ext://sys.stdout"
+    },
+    "file": {
+      "class": "logging.handlers.RotatingFileHandler",
+      "level": "DEBUG",
+      "formatter": "json",
+      "filename": "logs/test.log",
+      "maxBytes": 10000,
+      "backupCount": 5
+    },
+    "graylog": {
+      "class": "logging.handlers.HTTPHandler",
+      "level": "INFO",
+      "formatter": "json",
+      "host": "localhost:3000",
+      "url": "/",
+      "method": "GET"
+    },
+    "queue": {
+      "handlers": [
+        "file", "graylog"
+      ]
+    }
+  },
+  "loggers": {
+    "root": {
+      "level": "DEBUG",
+      "handlers": [
+        "queue"
+      ]
+    }
+  }
+}
